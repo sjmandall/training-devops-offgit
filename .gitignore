@@ -1,0 +1,14 @@
+*.log
+*.tmp
+*.swp
+*.swo
+*.gz
+*.tar
+*.tar.gz
+.env
+project/backups/site/*
+project/backups/db/*
+project/logs/*
+!project/backups/site/.gitkeep
+!project/backups/db/.gitkeep
+!project/logs/.gitkeep

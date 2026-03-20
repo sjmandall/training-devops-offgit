@@ -1,0 +1,11 @@
+/home/webadmin/project/logs/health.jsonl {
+    su webadmin webadmin
+    daily
+    rotate 7
+    missingok
+    notifempty
+    compress
+    delaycompress
+    copytruncate
+    create 0644 webadmin webadmin
+}
