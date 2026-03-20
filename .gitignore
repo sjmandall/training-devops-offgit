@@ -12,3 +12,5 @@ project/logs/*
 !project/backups/site/.gitkeep
 !project/backups/db/.gitkeep
 !project/logs/.gitkeep
+!project/app/.gitkeep
+!project/k8s/.gitkeep
