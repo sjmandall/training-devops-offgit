@@ -3,7 +3,7 @@ SHELL := /bin/bash
 test:
 	@echo "Running healthcheck..."
 	bash scripts/healthcheck.sh
-	tail -n 1 /home/webadmin/project/logs/health.jsonl
+	tail -n 1 logs/health.jsonl
 
 run:
 	@echo "Checking local app..."
