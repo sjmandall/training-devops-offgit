@@ -2,7 +2,7 @@ SHELL := /bin/bash
 
 test:
 	@echo "Running healthcheck..."
-	/home/webadmin/project/scripts/healthcheck.sh
+	bash scripts/healthcheck.sh
 	tail -n 1 /home/webadmin/project/logs/health.jsonl
 
 run:
