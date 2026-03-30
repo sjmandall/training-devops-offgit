@@ -1,0 +1,8 @@
+{
+  "app_name": "training-site",
+  "build_tag": "20260326-115523-01939bd",
+  "git_commit": "01939bd",
+  "build_date_utc": "2026-03-26T06:25:23Z",
+  "dockerfile": "docker/Dockerfile",
+  "image_name": "training-site:20260326-115523-01939bd"
+}

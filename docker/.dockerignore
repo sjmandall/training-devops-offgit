@@ -1,0 +1,14 @@
+.git
+.gitignore
+docs
+logs
+backups
+infra
+k8s
+ci
+docker-compose.yml
+*.tar.gz
+*.sql
+.env
+.env.*
+node_modules

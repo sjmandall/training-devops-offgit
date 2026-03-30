@@ -1,0 +1,2 @@
+{"Test":["CMD-SHELL","curl -fsS http://127.0.0.1/info.php || curl -fsS http://127.0.0.1/index.php || exit 1"],"Interval":30000000000,"Timeout":5000000000,"StartPeriod":10000000000,"Retries":3}
+healthy

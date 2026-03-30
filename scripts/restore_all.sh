@@ -11,7 +11,7 @@ DB_PASS="StrongPassword123!"
 
 SITE_BACKUP_DIR="$HOME/project/backups/site"
 DB_BACKUP_DIR="$HOME/project/backups/db"
-SQL_DIR="$HOME/project/sql"
+SQL_DIR="$HOME/project/app/db"
 
 LATEST_SITE_BACKUP="$(ls -t "$SITE_BACKUP_DIR"/site_backup_*.tar.gz 2>/dev/null | head -n 1)"
 LATEST_DB_BACKUP="$(ls -t "$DB_BACKUP_DIR"/db_backup_"$DB_NAME"_*.tar.gz 2>/dev/null | head -n 1)"

@@ -1,0 +1,13 @@
+Netid State  Recv-Q Send-Q  Local Address:Port  Peer Address:PortProcess                                                                 
+udp   UNCONN 0      0          127.0.0.54:53         0.0.0.0:*    uid:991 ino:6917 sk:1 cgroup:/system.slice/systemd-resolved.service <->
+udp   UNCONN 0      0       127.0.0.53%lo:53         0.0.0.0:*    uid:991 ino:6915 sk:2 cgroup:/system.slice/systemd-resolved.service <->
+udp   UNCONN 0      0      10.255.255.254:53         0.0.0.0:*    ino:7849 sk:3 cgroup:/ <->                                             
+udp   UNCONN 0      0           127.0.0.1:323        0.0.0.0:*    ino:8198 sk:4 cgroup:/ <->                                             
+udp   UNCONN 0      0               [::1]:323           [::]:*    ino:8199 sk:5 cgroup:/ v6only:1 <->                                    
+tcp   LISTEN 0      151         127.0.0.1:3306       0.0.0.0:*    uid:105 ino:4515 sk:6 cgroup:/system.slice/mysql.service <->           
+tcp   LISTEN 0      1000   10.255.255.254:53         0.0.0.0:*    ino:7850 sk:7 cgroup:/ <->                                             
+tcp   LISTEN 0      4096       127.0.0.54:53         0.0.0.0:*    uid:991 ino:6918 sk:8 cgroup:/system.slice/systemd-resolved.service <->
+tcp   LISTEN 0      4096    127.0.0.53%lo:53         0.0.0.0:*    uid:991 ino:6916 sk:9 cgroup:/system.slice/systemd-resolved.service <->
+tcp   LISTEN 0      70          127.0.0.1:33060      0.0.0.0:*    uid:105 ino:3566 sk:a cgroup:/system.slice/mysql.service <->           
+tcp   LISTEN 0      511                 *:443              *:*    ino:8452 sk:b cgroup:/system.slice/apache2.service v6only:0 <->        
+tcp   LISTEN 0      511                 *:80               *:*    ino:8448 sk:c cgroup:/system.slice/apache2.service v6only:0 <->        

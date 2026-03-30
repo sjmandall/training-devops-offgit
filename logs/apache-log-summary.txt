@@ -1,0 +1,8 @@
+Apache Log Review Summary
+Generated: Tue Mar 24 10:32:06 IST 2026
+
+Last 20 Apache errors
+Error log not found: /var/log/apache2/error.log
+
+Top 10 client IPs from access log
+Access log not found: /var/log/apache2/access.log
