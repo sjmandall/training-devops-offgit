@@ -1,0 +1,189 @@
+Started by user TESTUSER
+
+Obtained ci/Jenkinsfile from git https://github.com/sjmandall/training-devops-offgit.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins
+ in /var/lib/jenkins/workspace/tranning-pipeline
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential e77110fc-8cc4-46e9-912d-46908534c550
+Cloning the remote Git repository
+Cloning repository https://github.com/sjmandall/training-devops-offgit.git
+ > git init /var/lib/jenkins/workspace/tranning-pipeline # timeout=10
+Fetching upstream changes from https://github.com/sjmandall/training-devops-offgit.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+using GIT_ASKPASS to set credentials 
+ > git fetch --tags --force --progress -- https://github.com/sjmandall/training-devops-offgit.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/sjmandall/training-devops-offgit.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+Avoid second fetch
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 897705ff3606abea7b6a490d0992ccbe92233361 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 897705ff3606abea7b6a490d0992ccbe92233361 # timeout=10
+Commit message: "feat: day13 real Jenkins pipeline with lint,docker build,test,publish,cleanup"
+ > git rev-list --no-walk 535264671bed92c55a1acad156e90ff75b467297 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout)
+[Pipeline] checkout
+12:18:05  Selected Git installation does not exist. Using Default
+12:18:05  The recommended git tool is: NONE
+12:18:05  using credential e77110fc-8cc4-46e9-912d-46908534c550
+12:18:05   > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/tranning-pipeline/.git # timeout=10
+12:18:05  Fetching changes from the remote Git repository
+12:18:05   > git config remote.origin.url https://github.com/sjmandall/training-devops-offgit.git # timeout=10
+12:18:05  Fetching upstream changes from https://github.com/sjmandall/training-devops-offgit.git
+12:18:05   > git --version # timeout=10
+12:18:05   > git --version # 'git version 2.43.0'
+12:18:05  using GIT_ASKPASS to set credentials 
+12:18:05   > git fetch --tags --force --progress -- https://github.com/sjmandall/training-devops-offgit.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+12:18:06   > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+12:18:06  Checking out Revision 897705ff3606abea7b6a490d0992ccbe92233361 (refs/remotes/origin/main)
+12:18:06   > git config core.sparsecheckout # timeout=10
+12:18:06   > git checkout -f 897705ff3606abea7b6a490d0992ccbe92233361 # timeout=10
+12:18:06  Commit message: "feat: day13 real Jenkins pipeline with lint,docker build,test,publish,cleanup"
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Lint)
+[Pipeline] sh
+12:18:07  + echo === Lint stage ===
+12:18:07  === Lint stage ===
+12:18:07  + make lint
+12:18:07  Running PHP lint...
+12:18:07  php -l app/site/index.php || true
+12:18:07  No syntax errors detected in app/site/index.php
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build Docker image)
+[Pipeline] sh
+12:18:08  + echo === Build Docker Image stage ===
+12:18:08  === Build Docker Image stage ===
+12:18:08  + docker build -f docker/Dockerfile -t training-site:8 .
+12:18:08  failed to fetch metadata: fork/exec /usr/local/lib/docker/cli-plugins/docker-buildx: no such file or directory
+12:18:08  
+12:18:08  DEPRECATED: The legacy builder is deprecated and will be removed in a future release.
+12:18:08              Install the buildx component to build images with BuildKit:
+12:18:08              https://docs.docker.com/go/buildx/
+12:18:08  
+12:18:08  Sending build context to Docker daemon  280.1kB
+12:18:08  
+12:18:08  Step 1/17 : FROM alpine:3.20 AS prepare
+12:18:08   ---> cc9071bd1610
+12:18:08  Step 2/17 : WORKDIR /src
+12:18:08   ---> Using cache
+12:18:08   ---> ffd4210edeb6
+12:18:08  Step 3/17 : COPY app/site/ /src/site/
+12:18:08   ---> 7eadf9621a20
+12:18:08  Step 4/17 : COPY app/config/app.env.example /src/config/app.env.example
+12:18:08   ---> 7e95f60e6d93
+12:18:08  Step 5/17 : FROM php:8.2-apache
+12:18:08   ---> 28ec2fca4fd9
+12:18:08  Step 6/17 : ENV APP_HOME=/var/www/website     DB_HOST=localhost     DB_PORT=3306     DB_NAME=trainingdb     DB_USER=trainingapp     DB_PASSWORD=StrongPassword!
+12:18:08   ---> Using cache
+12:18:08   ---> 0c4fa235f543
+12:18:08  Step 7/17 : RUN apt-get update     && apt-get install -y --no-install-recommends curl     && rm -rf /var/lib/apt/lists/*     && a2enmod rewrite
+12:18:08   ---> Using cache
+12:18:08   ---> 57c189571fa7
+12:18:08  Step 8/17 : RUN mkdir -p ${APP_HOME} /var/www/config
+12:18:08   ---> Using cache
+12:18:08   ---> 6ec64d932820
+12:18:08  Step 9/17 : COPY docker/apache/website.conf /etc/apache2/sites-available/website.conf
+12:18:08   ---> 2c3a46dcab92
+12:18:08  Step 10/17 : RUN a2dissite 000-default.conf     && a2ensite website.conf
+12:18:08   ---> Running in 2aa1eea70278
+12:18:10  Site 000-default disabled.
+12:18:10  To activate the new configuration, you need to run:
+12:18:10    service apache2 reload
+12:18:10  Enabling site website.
+12:18:10  To activate the new configuration, you need to run:
+12:18:10    service apache2 reload
+12:18:10   ---> Removed intermediate container 2aa1eea70278
+12:18:10   ---> b95633f2144c
+12:18:10  Step 11/17 : COPY --from=prepare /src/site/ ${APP_HOME}/
+12:18:10   ---> d8512c48f4d2
+12:18:10  Step 12/17 : COPY --from=prepare /src/config/app.env.example /var/www/config/app.env.example
+12:18:10   ---> 0a6393035970
+12:18:10  Step 13/17 : RUN chown -R www-data:www-data ${APP_HOME} /var/www/config
+12:18:10   ---> Running in 5b04d1ebde1c
+12:18:14   ---> Removed intermediate container 5b04d1ebde1c
+12:18:14   ---> acca8b0d2608
+12:18:14  Step 14/17 : WORKDIR ${APP_HOME}
+12:18:14   ---> Running in 8b6945256e3b
+12:18:15   ---> Removed intermediate container 8b6945256e3b
+12:18:15   ---> 6829abd16d13
+12:18:15  Step 15/17 : HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3   CMD curl -fsS http://127.0.0.1/info.php || curl -fsS http://127.0.0.1/index.php || exit 1
+12:18:15   ---> Running in 4956345c492c
+12:18:15   ---> Removed intermediate container 4956345c492c
+12:18:15   ---> f7066273ab10
+12:18:15  Step 16/17 : USER www-data
+12:18:15   ---> Running in c8a151fe592a
+12:18:15   ---> Removed intermediate container c8a151fe592a
+12:18:15   ---> ad6910e880e0
+12:18:15  Step 17/17 : EXPOSE 80
+12:18:15   ---> Running in 7a0458468342
+12:18:15   ---> Removed intermediate container 7a0458468342
+12:18:15   ---> 6f6e51af924d
+12:18:15  Successfully built 6f6e51af924d
+12:18:15  Successfully tagged training-site:8
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] sh
+12:18:15  + echo === Test stage ===
+12:18:15  === Test stage ===
+12:18:15  + make test
+12:18:15  Running healthcheck...
+12:18:15  bash scripts/healthcheck.sh
+12:18:15  Health check written to /var/lib/jenkins/project/logs/health.jsonl
+12:18:15  tail -n 1 logs/health.jsonl
+12:18:15  {"timestamp":"2026-03-30T13:50:04+05:30","url":"https://localhost/day3/","https":"up","db":"up","details":""}
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Publish artifacts)
+[Pipeline] sh
+12:18:16  + echo === Publish artifacts stage ===
+12:18:16  === Publish artifacts stage ===
+12:18:16  + mkdir -p logs
+12:18:16  + echo Build number: 8
+[Pipeline] archiveArtifacts
+12:18:16  Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] echo
+12:18:16  Cleaning workspace...
+[Pipeline] cleanWs
+12:18:16  [WS-CLEANUP] Deleting project workspace...
+12:18:16  [WS-CLEANUP] Deferred wipeout is used...
+12:18:16  [WS-CLEANUP] done
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // timestamps
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
