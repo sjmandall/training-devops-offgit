@@ -1,6 +1,16 @@
 pipeline {
   agent any
 
+  options {
+    timestamps()
+    buildDiscarder(logRotator(numToKeepStr: '10'))
+  }
+
+  environment {
+    APP_NAME   = 'training-site'
+    IMAGE_TAG  = "training-site:${env.BUILD_NUMBER}"
+  }
+
   stages {
     stage('Checkout') {
       steps {
@@ -8,17 +18,49 @@ pipeline {
       }
     }
 
-    stage('Build and Test') {
+    stage('Lint') {
       steps {
-        sh 'make test'
+        sh '''
+          echo "=== Lint stage ==="
+          make lint
+        '''
+      }
+    }
+
+    stage('Build Docker image') {
+      steps {
+        sh '''
+          echo "=== Build Docker Image stage ==="
+          docker build -f docker/Dockerfile -t ${IMAGE_TAG} .
+        '''
+      }
+    }
+
+    stage('Test') {
+      steps {
+        sh '''
+          echo "=== Test stage ==="
+          make test
+        '''
+      }
+    }
+
+    stage('Publish artifacts') {
+      steps {
+        sh '''
+          echo "=== Publish artifacts stage ==="
+          mkdir -p logs
+          echo "Build number: ${BUILD_NUMBER}" > logs/build-info-ci.txt
+        '''
+        archiveArtifacts artifacts: 'logs/**,backups/**', allowEmptyArchive: true
       }
     }
   }
 
   post {
     always {
-      archiveArtifacts artifacts: 'logs/**', allowEmptyArchive: true
+      echo "Cleaning workspace..."
+      cleanWs()
     }
   }
 }
-
