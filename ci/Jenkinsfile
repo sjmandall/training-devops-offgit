@@ -31,7 +31,7 @@ pipeline {
       steps {
         sh '''
           echo "=== Build Docker Image stage ==="
-          docker build -f docker/Dockerfile -t ${IMAGE_TAG} .
+          sudo docker build -f docker/Dockerfile -t ${IMAGE_TAG} .
         '''
       }
     }
