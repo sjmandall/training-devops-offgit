@@ -1,5 +1,14 @@
 SHELL := /bin/bash
 
+
+lint:
+	@echo "Running PHP lint..."
+	php -l app/site/index.php || true
+
+build:
+	@echo "Building app Dcoker image (local)..."
+	sudo docker build -f docker/Dockerfile -t mysite:local .
+
 test:
 	@echo "Running healthcheck..."
 	bash scripts/healthcheck.sh
