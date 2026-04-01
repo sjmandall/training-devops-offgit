@@ -6,9 +6,27 @@ pipeline {
     buildDiscarder(logRotator(numToKeepStr: '10'))
   }
 
+  parameters {
+    choice(
+      name: 'ENVIRONMENT',
+      choices: ['dev', 'staging', 'production'],
+      description: 'Target deployment environment'
+    )
+    string(
+      name: 'VERSION',
+      defaultValue: '1.0.0',
+      description: 'Application version to deploy'
+    )
+    booleanParam(
+      name: 'SIMULATE_FAILURE',
+      defaultValue: false,
+      description: 'Tick this to simulate a pipeline failure for demo'
+    )
+  }
+
   environment {
-    APP_NAME   = 'training-site'
-    IMAGE_TAG  = "training-site:${env.BUILD_NUMBER}"
+    APP_NAME  = 'training-site'
+    IMAGE_TAG = "training-site:${params.VERSION}"
   }
 
   stages {
@@ -22,6 +40,8 @@ pipeline {
       steps {
         sh '''
           echo "=== Lint stage ==="
+          echo "Environment : $ENVIRONMENT"
+          echo "Version     : $VERSION"
           make lint
         '''
       }
@@ -31,7 +51,8 @@ pipeline {
       steps {
         sh '''
           echo "=== Build Docker Image stage ==="
-          docker build -f docker/Dockerfile -t ${IMAGE_TAG} .
+          echo "Building version: $VERSION for environment: $ENVIRONMENT"
+          docker build -f docker/Dockerfile -t training-site:$VERSION .
         '''
       }
     }
@@ -45,22 +66,64 @@ pipeline {
       }
     }
 
+    stage('Simulate failure') {
+      steps {
+        script {
+          if (params.SIMULATE_FAILURE) {
+            error("Simulated failure triggered intentionally for Day 14 demo")
+          } else {
+            echo "SIMULATE_FAILURE is false. Skipping failure simulation."
+          }
+        }
+      }
+    }
+
     stage('Publish artifacts') {
       steps {
         sh '''
           echo "=== Publish artifacts stage ==="
           mkdir -p logs
-          echo "Build number: ${BUILD_NUMBER}" > logs/build-info-ci.txt
+          echo "Build: ${BUILD_NUMBER} | Version: ${VERSION} | Env: ${ENVIRONMENT}" > logs/day14-build-info.txt
         '''
-        archiveArtifacts artifacts: 'logs/**,backups/**', allowEmptyArchive: true
+        archiveArtifacts artifacts: 'logs/**,build/**', allowEmptyArchive: true
+      }
+    }
+
+    stage('Notify') {
+      steps {
+        echo "=== Notification stage ==="
+        echo "Build ${env.BUILD_NUMBER} completed."
+        echo "Version   : ${params.VERSION}"
+        echo "Environment: ${params.ENVIRONMENT}"
+        echo "Notification placeholder: In production this would send a Slack or email alert to the team."
       }
     }
   }
 
   post {
+    success {
+      echo "========================================="
+      echo "Pipeline SUCCEEDED"
+      echo "Job       : ${env.JOB_NAME}"
+      echo "Build     : ${env.BUILD_NUMBER}"
+      echo "Version   : ${params.VERSION}"
+      echo "Environment: ${params.ENVIRONMENT}"
+      echo "========================================="
+    }
+    failure {
+      echo "========================================="
+      echo "Pipeline FAILED"
+      echo "Job       : ${env.JOB_NAME}"
+      echo "Build     : ${env.BUILD_NUMBER}"
+      echo "Version   : ${params.VERSION}"
+      echo "Environment: ${params.ENVIRONMENT}"
+      echo "Notification placeholder: Alert team about this failure."
+      echo "========================================="
+    }
     always {
       echo "Cleaning workspace..."
       cleanWs()
     }
   }
 }
+
