@@ -1,0 +1,76 @@
+Started by user TESTUSER
+
+Obtained ci/Jenkinsfile from git https://github.com/sjmandall/training-devops-offgit.git
+[Pipeline] Start of Pipeline
+[Pipeline] node
+Running on Jenkins
+ in /var/lib/jenkins/workspace/tranning-pipeline
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Declarative: Checkout SCM)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential e77110fc-8cc4-46e9-912d-46908534c550
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/tranning-pipeline/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/sjmandall/training-devops-offgit.git # timeout=10
+Fetching upstream changes from https://github.com/sjmandall/training-devops-offgit.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+using GIT_ASKPASS to set credentials 
+ > git fetch --tags --force --progress -- https://github.com/sjmandall/training-devops-offgit.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 8a9163b9c339fcd7535d11a0e5deb00e3d807d16 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 8a9163b9c339fcd7535d11a0e5deb00e3d807d16 # timeout=10
+Commit message: "fix:Changed the Path for Makefile"
+ > git rev-list --no-walk 91c20db28d6ce5b515cb0591496a855b77b11970 # timeout=10
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Checkout)
+[Pipeline] checkout
+Selected Git installation does not exist. Using Default
+The recommended git tool is: NONE
+using credential e77110fc-8cc4-46e9-912d-46908534c550
+ > git rev-parse --resolve-git-dir /var/lib/jenkins/workspace/tranning-pipeline/.git # timeout=10
+Fetching changes from the remote Git repository
+ > git config remote.origin.url https://github.com/sjmandall/training-devops-offgit.git # timeout=10
+Fetching upstream changes from https://github.com/sjmandall/training-devops-offgit.git
+ > git --version # timeout=10
+ > git --version # 'git version 2.43.0'
+using GIT_ASKPASS to set credentials 
+ > git fetch --tags --force --progress -- https://github.com/sjmandall/training-devops-offgit.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git rev-parse refs/remotes/origin/main^{commit} # timeout=10
+Checking out Revision 8a9163b9c339fcd7535d11a0e5deb00e3d807d16 (refs/remotes/origin/main)
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 8a9163b9c339fcd7535d11a0e5deb00e3d807d16 # timeout=10
+Commit message: "fix:Changed the Path for Makefile"
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build and Test)
+[Pipeline] sh
++ make test
+Running healthcheck...
+bash scripts/healthcheck.sh
+Health check written to /var/lib/jenkins/project/logs/health.jsonl
+tail -n 1 logs/health.jsonl
+{"timestamp":"2026-03-30T13:50:04+05:30","url":"https://localhost/day3/","https":"up","db":"up","details":""}
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Declarative: Post Actions)
+[Pipeline] archiveArtifacts
+Archiving artifacts
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] End of Pipeline
+Finished: SUCCESS
