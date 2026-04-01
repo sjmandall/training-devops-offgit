@@ -114,7 +114,7 @@ pipeline {
       echo "Pipeline FAILED"
       mail(
         to: 'sjmandal2415@gmail.com',
-        subject: "FAILED: Job ${env.JOB_NAME} Build ${env.BUILD_NUMBER}"
+        subject: "FAILED: Job ${env.JOB_NAME} Build ${env.BUILD_NUMBER}",
         body: """
            Pipelined failed.
             Job       : ${env.JOB_NAME}
