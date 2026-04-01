@@ -25,8 +25,13 @@ pipeline {
   }
 
   environment {
-    APP_NAME  = 'training-site'
-    IMAGE_TAG = "training-site:${params.VERSION}"
+    APP_NAME      = 'training-site'
+    IMAGE_TAG     = "training-site:${params.VERSION}"
+    NOTIFY_EMAIL  = 'sjmandal2415@gmail.com'
+    TWILIO_SID    = credentials('twilio-account-sid')
+    TWILIO_TOKEN  = credentials('twilio-auth-token')
+    TWILIO_FROM   = '+15187213926'   // replace with your Twilio number
+    TWILIO_TO     = '+917991172794'  // replace with your personal number
   }
 
   stages {
@@ -93,9 +98,8 @@ pipeline {
       steps {
         echo "=== Notification stage ==="
         echo "Build ${env.BUILD_NUMBER} completed."
-        echo "Version   : ${params.VERSION}"
+        echo "Version    : ${params.VERSION}"
         echo "Environment: ${params.ENVIRONMENT}"
-        echo "Notification placeholder: In production this would send a Slack or email alert to the team."
       }
     }
   }
@@ -104,37 +108,97 @@ pipeline {
     success {
       echo "========================================="
       echo "Pipeline SUCCEEDED"
-      echo "Job       : ${env.JOB_NAME}"
-      echo "Build     : ${env.BUILD_NUMBER}"
-      echo "Version   : ${params.VERSION}"
-      echo "Environment: ${params.ENVIRONMENT}"
       echo "========================================="
-    }
-    failure {
-      echo "Pipeline FAILED"
+
+      // 1. Email notification
       mail(
-        to: 'sjmandal2415@gmail.com',
-        subject: "FAILED: Job ${env.JOB_NAME} Build ${env.BUILD_NUMBER}",
+        to: "${env.NOTIFY_EMAIL}",
+        subject: "SUCCESS: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
         body: """
-           Pipelined failed.
-            Job       : ${env.JOB_NAME}
-            Build     : ${env.BUILD_NUMBER}
-            Version   : ${params.VERSION}
-            Environment: ${params.ENVIRONMENT}
-            Check logs: ${env.BUILD_URL}
-            """
+Pipeline passed successfully.
+
+Job        : ${env.JOB_NAME}
+Build      : ${env.BUILD_NUMBER}
+Version    : ${params.VERSION}
+Environment: ${params.ENVIRONMENT}
+Build URL  : ${env.BUILD_URL}
+        """
       )
-      echo "Job       : ${env.JOB_NAME}"
-      echo "Build     : ${env.BUILD_NUMBER}"
-      echo "Version   : ${params.VERSION}"
-      echo "Environment: ${params.ENVIRONMENT}"
-      echo "Notification placeholder: Alert team about this failure."
-      echo "========================================="
+
+      // 2. Slack notification
+      slackSend(
+        channel: '#jenkins-alerts',
+        color: 'good',
+        message: """
+*Pipeline PASSED* :white_check_mark:
+*Job*        : ${env.JOB_NAME}
+*Build*      : #${env.BUILD_NUMBER}
+*Version*    : ${params.VERSION}
+*Environment*: ${params.ENVIRONMENT}
+*URL*        : ${env.BUILD_URL}
+        """
+      )
+
+      // 3. Twilio SMS notification
+      sh """
+        curl -X POST https://api.twilio.com/2010-04-01/Accounts/${TWILIO_SID}/Messages.json \\
+        --data-urlencode "Body=JENKINS PASSED: ${env.JOB_NAME} #${env.BUILD_NUMBER} | Version: ${params.VERSION} | Env: ${params.ENVIRONMENT}" \\
+        --data-urlencode "From=${TWILIO_FROM}" \\
+        --data-urlencode "To=${TWILIO_TO}" \\
+        -u "${TWILIO_SID}:${TWILIO_TOKEN}"
+      """
     }
+
+    failure {
+      echo "========================================="
+      echo "Pipeline FAILED"
+      echo "========================================="
+
+      // 1. Email notification
+      mail(
+        to: "${env.NOTIFY_EMAIL}",
+        subject: "FAILED: ${env.JOB_NAME} - Build #${env.BUILD_NUMBER}",
+        body: """
+Pipeline has FAILED.
+
+Job        : ${env.JOB_NAME}
+Build      : ${env.BUILD_NUMBER}
+Version    : ${params.VERSION}
+Environment: ${params.ENVIRONMENT}
+Build URL  : ${env.BUILD_URL}
+
+Please check the logs immediately.
+        """
+      )
+
+      // 2. Slack notification
+      slackSend(
+        channel: '#jenkins-alerts',
+        color: 'danger',
+        message: """
+*Pipeline FAILED* :x:
+*Job*        : ${env.JOB_NAME}
+*Build*      : #${env.BUILD_NUMBER}
+*Version*    : ${params.VERSION}
+*Environment*: ${params.ENVIRONMENT}
+*URL*        : ${env.BUILD_URL}
+Please check the logs immediately!
+        """
+      )
+
+      // 3. Twilio SMS notification
+      sh """
+        curl -X POST https://api.twilio.com/2010-04-01/Accounts/${TWILIO_SID}/Messages.json \\
+        --data-urlencode "Body=JENKINS FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER} | Version: ${params.VERSION} | Env: ${params.ENVIRONMENT} | Check immediately!" \\
+        --data-urlencode "From=${TWILIO_FROM}" \\
+        --data-urlencode "To=${TWILIO_TO}" \\
+        -u "${TWILIO_SID}:${TWILIO_TOKEN}"
+      """
+    }
+
     always {
       echo "Cleaning workspace..."
       cleanWs()
     }
   }
 }
-
