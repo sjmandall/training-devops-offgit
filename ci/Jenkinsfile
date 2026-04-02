@@ -197,7 +197,7 @@ Please check the logs immediately!
         --data-urlencode "To=${TWILIO_TO}" \\
         -u "${TWILIO_SID}:${TWILIO_TOKEN}"
       """
-    }
+    
 
     // 4. Trello card creation
       httpRequest(
@@ -214,6 +214,8 @@ Please check the logs immediately!
       """,
       contentType: 'APPLICATION_JSON'
     )
+
+      }
 
     always {
       echo "Cleaning workspace..."
