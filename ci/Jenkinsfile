@@ -30,8 +30,11 @@ pipeline {
     NOTIFY_EMAIL  = 'sjmandal2415@gmail.com'
     TWILIO_SID    = credentials('twilio-account-sid')
     TWILIO_TOKEN  = credentials('twilio-auth-token')
-    TWILIO_FROM   = '+15187213926'   // replace with your Twilio number
-    TWILIO_TO     = '+917991172794'  // replace with your personal number
+    TWILIO_FROM   = '+15187213926'   
+    TWILIO_TO     = '+917991172794'
+    TRELLO_KEY      = credentials('trello-api-key')
+    TRELLO_TOKEN    = credentials('trello-token')
+    TRELLO_LIST_ID  = credentials('trello-list-id') 
   }
 
   stages {
@@ -195,6 +198,22 @@ Please check the logs immediately!
         -u "${TWILIO_SID}:${TWILIO_TOKEN}"
       """
     }
+
+    // 4. Trello card creation
+      httpRequest(
+      url: "https://api.trello.com/1/cards",
+      httpMode: 'POST',
+      requestBody: """
+        {
+          "name": "BUILD FAILED: ${env.JOB_NAME} #${env.BUILD_NUMBER}",
+          "desc": "Pipeline failed. Check: ${env.BUILD_URL}",
+          "idList": "${env.TRELLO_LIST_ID}",
+          "key": "${env.TRELLO_KEY}",
+          "token": "${env.TRELLO_TOKEN}"
+        }
+      """,
+      contentType: 'APPLICATION_JSON'
+    )
 
     always {
       echo "Cleaning workspace..."
