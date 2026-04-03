@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: training-site
+  labels:
+    app: training-site
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: training-site
+  template:
+    metadata:
+      labels:
+        app: training-site
+    spec:
+      containers:
+        - name: training-site
+          image: training-site:1.0.0
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80
