@@ -16,3 +16,5 @@ project/logs/*
 !project/k8s/.gitkeep
 minikube-linux-amd64
 minikube
+minikube-linux-amd64
+minikube
