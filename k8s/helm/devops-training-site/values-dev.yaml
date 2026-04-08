@@ -1,0 +1,38 @@
+replicaCount: 1
+
+image:
+  repository: training-site
+  tag: "1.0.0"
+  pullPolicy: Never
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: true
+  className: nginx
+  host: mysite.sj
+  path: /
+
+configmap:
+  APP_ENV: "development"
+  APP_VERSION: "1.0.0"
+  APP_NAME: "training-site"
+  LOG_LEVEL: "debug"
+  MAX_CONNECTIONS: "10"
+
+probes:
+  readiness:
+    path: /
+    port: 80
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    failureThreshold: 3
+  liveness:
+    path: /
+    port: 80
+    initialDelaySeconds: 15
+    periodSeconds: 20
+    failureThreshold: 3
+

@@ -9,6 +9,11 @@ spec:
   selector:
     matchLabels:
       app: training-site
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
   template:
     metadata:
       labels:
@@ -20,3 +25,22 @@ spec:
           imagePullPolicy: Never
           ports:
             - containerPort: 80
+          envFrom:
+            - configMapRef:
+                name: training-site-config
+            - secretRef:
+                name: training-site-secret
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            failureThreshold: 3
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 15
+            periodSeconds: 20
+            failureThreshold: 3

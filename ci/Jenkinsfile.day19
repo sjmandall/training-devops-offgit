@@ -1,0 +1,103 @@
+pipeline {
+    agent any
+
+    environment {
+        IMAGE_NAME   = "training-site"
+        IMAGE_TAG    = "1.${BUILD_NUMBER}"
+        CHART_PATH   = "/home/webadmin/project/k8s/helm/devops-training-site"
+        VALUES_FILE  = "/home/webadmin/project/k8s/helm/devops-training-site/values-dev.yaml"
+        RELEASE_NAME = "dev"
+        NAMESPACE    = "dev"
+        APP_URL      = "http://mysite.sj"
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
+        }
+
+        stage('Build Image') {
+            steps {
+                echo "Building Docker image: ${env.IMAGE_NAME}:${env.IMAGE_TAG}"
+                sh """
+                    eval $(minikube docker-env)
+                    docker build -t ${env.IMAGE_NAME}:${env.IMAGE_TAG} /home/webadmin/project/docker/
+                    echo "Image built: ${env.IMAGE_NAME}:${env.IMAGE_TAG}"
+                """
+            }
+        }
+
+        stage('Helm Deploy') {
+            steps {
+                echo "Deploying Helm release: ${RELEASE_NAME} with tag ${IMAGE_TAG}"
+                sh '''
+                    helm upgrade --install ${RELEASE_NAME} ${CHART_PATH} \
+                        -f ${VALUES_FILE} \
+                        --set image.tag=${IMAGE_TAG} \
+                        -n ${NAMESPACE} \
+                        --create-namespace \
+                        --timeout 120s
+                '''
+            }
+        }
+
+        stage('Wait for Rollout') {
+            steps { echo "Waiting for rollout to complete..."
+                sh '''
+                    kubectl rollout status deployment/${RELEASE_NAME}-training-site \
+                        -n ${NAMESPACE} \
+                        --timeout=120s
+                '''
+            }
+        }
+
+        stage('Smoke Test') {
+            steps {
+                echo "Running smoke test against ${APP_URL}"
+                sh '''
+                    sleep 5
+                    HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+                        --max-time 10 ${APP_URL} || echo "000")
+                    echo "HTTP Response Code: ${HTTP_CODE}"
+                    if [ "${HTTP_CODE}" = "200" ]; then
+                        echo "Smoke test PASSED - App is reachable"
+                    else
+                        echo "Smoke test WARNING - Got HTTP ${HTTP_CODE}"
+                        echo "Deployment is complete. Use port-forward to verify locally."
+                    fi
+                '''
+            }
+        }
+
+    }
+
+    post {
+        failure {
+            echo "Pipeline FAILED. Running Helm rollback..."
+            sh '''
+                helm rollback ${RELEASE_NAME} -n ${NAMESPACE} || true
+                echo "=== Rollback complete. Revision history ==="
+                helm history ${RELEASE_NAME} -n ${NAMESPACE}
+            '''
+        }
+        success {
+            echo "Pipeline SUCCESS. Release ${RELEASE_NAME}:${IMAGE_TAG} is live."
+            sh '''
+                echo "=== Helm Releases ==="
+                helm list -A
+                echo "=== Pod Status ==="
+                kubectl get pods -n ${NAMESPACE}
+                echo "=== Rollout Status ==="
+                kubectl rollout status deployment/${RELEASE_NAME}-training-site -n ${NAMESPACE}
+            '''
+        }
+        always {
+            echo "=== Final Pod Status ==="
+            sh 'kubectl get pods -n ${NAMESPACE} || true'
+        }
+    }
+}
+

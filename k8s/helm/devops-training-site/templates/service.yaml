@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-training-site
+  labels:
+    app: {{ .Release.Name }}-training-site
+spec:
+  selector:
+    app: {{ .Release.Name }}-training-site
+  ports:
+    - protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.port }}
+  type: {{ .Values.service.type }}
+

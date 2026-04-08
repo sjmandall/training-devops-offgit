@@ -1,0 +1,36 @@
+========================================
+Training Site Helm Chart
+========================================
+
+Release name    : {{ .Release.Name }}
+Namespace       : {{ .Release.Namespace }}
+Environment     : {{ .Values.configmap.APP_ENV }}
+App version     : {{ .Values.configmap.APP_VERSION }}
+Replicas        : {{ .Values.replicaCount }}
+Image           : {{ .Values.image.repository }}:{{ .Values.image.tag }}
+
+----------------------------------------
+Access your application:
+----------------------------------------
+
+1. Port forward to access in browser:
+   kubectl port-forward service/{{ .Release.Name }}-training-site 7070:80
+
+2. Open in browser:
+   http://localhost:7070
+
+3. Curl test:
+   curl -H "Host: {{ .Values.ingress.host }}" http://{{ .Values.ingress.host }}
+
+----------------------------------------
+Useful commands:
+----------------------------------------
+
+Check pods:
+   kubectl get pods -l app={{ .Release.Name }}-training-site
+
+Uninstall:
+   helm uninstall {{ .Release.Name }}
+
+========================================
+
