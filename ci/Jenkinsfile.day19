@@ -38,7 +38,7 @@ pipeline {
                 sh '''
                     helm upgrade --install ${RELEASE_NAME} ${CHART_PATH} \
                         -f ${VALUES_FILE} \
-                        --set image.tag=brokentag99 \
+                        --set image.tag=${IMAGE_TAG} \
                         -n ${NAMESPACE} \
                         --create-namespace \
                         --timeout 120s
