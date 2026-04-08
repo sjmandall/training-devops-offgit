@@ -4,8 +4,8 @@ pipeline {
     environment {
         IMAGE_NAME   = "training-site"
         IMAGE_TAG    = "1.${BUILD_NUMBER}"
-        CHART_PATH   = "/home/webadmin/project/k8s/helm/devops-training-site"
-        VALUES_FILE  = "/home/webadmin/project/k8s/helm/devops-training-site/values-dev.yaml"
+        CHART_PATH   = "k8s/helm/devops-training-site"
+        VALUES_FILE  = "k8s/helm/devops-training-site/values-dev.yaml"
         RELEASE_NAME = "dev"
         NAMESPACE    = "dev"
         APP_URL      = "http://mysite.sj"
