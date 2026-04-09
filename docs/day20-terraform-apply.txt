@@ -1,0 +1,20 @@
+[0m[1mlocal_file.app_config: Refreshing state... [id=0d6e8d534084c1352d390479ceb802f72a037e22][0m
+[0m[1mlocal_file.deployment_info: Refreshing state... [id=da656d4f8593ad374edb0d6eee07e51445700053][0m
+[0m[1mlocal_file.hosts_mapping: Refreshing state... [id=85ba76f39a2c752f2afac1cc8f1287087fb51914][0m
+[0m[1mlocal_file.output_dir_placeholder: Refreshing state... [id=48d93419614a29b40cf45ed380c4bbb8fa5ee58c][0m
+
+[0m[1m[32mNo changes.[0m[1m Your infrastructure matches the configuration.[0m
+
+[0mTerraform has compared your real infrastructure against your configuration
+and found no differences, so no changes are needed.
+[0m[1m[32m
+Apply complete! Resources: 0 added, 0 changed, 0 destroyed.[0m
+[0m[1m[32m
+Outputs:
+
+[0mapp_config_file = "/tmp/terraform-output/app.env"
+app_name = "training-site"
+app_url = "http://mysite.sj"
+deployment_info_file = "/tmp/terraform-output/deployment-info.txt"
+environment = "dev"
+hosts_mapping_file = "/tmp/terraform-output/hosts-mapping.txt"

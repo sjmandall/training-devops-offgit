@@ -18,3 +18,7 @@ minikube-linux-amd64
 minikube
 minikube-linux-amd64
 minikube
+terraform.tfstate
+terraform.tfstate.backup
+.terraform/
+.terraform.lock.hcl
