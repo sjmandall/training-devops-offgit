@@ -67,24 +67,25 @@ SECRETEOF
       }
     }
 
+    
     stage('Secret scanning') {
       steps {
         sh '''
           echo "=== Secret scanning with Gitleaks ==="
           gitleaks detect --source . \
+            --config .gitleaks.toml \
             --report-format json \
             --report-path gitleaks-report.json \
             --no-git \
-            --exit-code 1 || true
+            --exit-code 0 || true
 
-          if [ -f gitleaks-report.json ]; then
-            FINDINGS=$(cat gitleaks-report.json | python3 -c "import sys,json; data=json.load(sys.stdin); print(len(data))" 2>/dev/null || echo "0")
-            echo "Gitleaks findings: ${FINDINGS}"
-            if [ "$FINDINGS" -gt "0" ]; then
-              echo "CRITICAL: Secrets detected in codebase!"
-              cat gitleaks-report.json
-              exit 1
-            fi
+          FINDINGS=$(cat gitleaks-report.json | python3 -c "import sys,json; data=json.load(sys.stdin); print(len(data))" 2>/dev/null || echo "0")
+          echo "Gitleaks findings: ${FINDINGS}"
+
+          if [ "${FINDINGS}" -gt "0" ]; then
+            echo "CRITICAL: Secrets detected in codebase!"
+            cat gitleaks-report.json
+            exit 1
           fi
           echo "Secret scan PASSED - no secrets detected"
         '''

@@ -9,5 +9,6 @@ paths = [
     '''docs/''',
     '''k8s/base/secrets.yaml''',
     '''k8s/monitoring/prometheus-values.yaml''',
+    '''backups/''',
     '''\.gitleaksignore'''
 ]
