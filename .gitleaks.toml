@@ -7,6 +7,7 @@ useDefault = true
 description = "Ignore known safe training files"
 paths = [
     '''docs/''',
+    '''ci/Jenkinsfile''',
     '''k8s/base/secrets.yaml''',
     '''k8s/monitoring/prometheus-values.yaml''',
     '''backups/''',
