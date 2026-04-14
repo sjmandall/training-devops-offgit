@@ -1,0 +1,66 @@
+---
+- name: Configure Ubuntu workstation with DevOps tools
+  hosts: workstation
+  become: yes
+  gather_facts: yes
+
+  pre_tasks:
+    - name: Show target host information
+      ansible.builtin.debug:
+        msg:
+          - "Host    : {{ inventory_hostname }}"
+          - "OS      : {{ ansible_distribution }} {{ ansible_distribution_version }}"
+          - "User    : {{ ansible_env.SUDO_USER | default(ansible_user_id) }}"
+          - "Date    : {{ ansible_date_time.date }}"
+
+    - name: Ensure apt cache is fresh
+      ansible.builtin.apt:
+        update_cache: yes
+        cache_valid_time: 3600
+      become: yes
+
+  roles:
+    - workstation
+
+  post_tasks:
+    - name: Final verification - Java
+      ansible.builtin.command: java -version
+      register: java_final
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Final verification - Docker
+      ansible.builtin.command: docker --version
+      register: docker_final
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Final verification - kubectl
+      ansible.builtin.command: kubectl version --client
+      register: kubectl_final
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Final verification - Helm
+      ansible.builtin.command: helm version --short
+      register: helm_final
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Final verification - Jenkins
+      ansible.builtin.command: systemctl is-active jenkins
+      register: jenkins_final
+      changed_when: false
+      ignore_errors: yes
+
+    - name: Print final summary
+      ansible.builtin.debug:
+        msg:
+          - "======= Day 21 Workstation Summary ======="
+          - "Java    : {{ java_final.stderr | default('not found') }}"
+          - "Docker  : {{ docker_final.stdout | default('not found') }}"
+          - "kubectl : {{ kubectl_final.stdout | default('not found') }}"
+          - "Helm    : {{ helm_final.stdout | default('not found') }}"
+          - "Jenkins : {{ jenkins_final.stdout | default('not found') }}"
+          - "=========================================="
+

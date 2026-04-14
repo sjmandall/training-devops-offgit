@@ -1,0 +1,33 @@
+---
+- name: Install Docker packages
+  ansible.builtin.apt:
+    name: "{{ docker_packages }}"
+    state: present
+  become: yes
+  notify: Restart Docker
+
+- name: Add webadmin to docker group
+  ansible.builtin.user:
+    name: webadmin
+    groups: docker
+    append: yes
+  become: yes
+
+- name: Enable and start Docker service
+  ansible.builtin.systemd:
+    name: docker
+    enabled: yes
+    state: started
+  become: yes
+
+- name: Verify Docker version
+  ansible.builtin.command: docker --version
+  register: docker_version
+  changed_when: false
+  ignore_errors: yes
+
+- name: Show Docker version
+  ansible.builtin.debug:
+    msg: "Docker installed: {{ docker_version.stdout }}"
+  when: docker_version.rc == 0
+

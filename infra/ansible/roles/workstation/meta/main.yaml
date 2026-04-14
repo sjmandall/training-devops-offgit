@@ -1,0 +1,15 @@
+---
+galaxy_info:
+  role_name: workstation
+  author: webadmin
+  description: Configure Ubuntu workstation with DevOps tools for training course
+  license: MIT
+  min_ansible_version: "2.9"
+  platforms:
+    - name: Ubuntu
+      versions:
+        - focal
+        - jammy
+
+dependencies: []
+

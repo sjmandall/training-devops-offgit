@@ -1,0 +1,29 @@
+---
+- name: Check if Helm already exists
+  ansible.builtin.stat:
+    path: /usr/local/bin/helm
+  register: helm_binary
+
+- name: Download Helm install script
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3
+    dest: /tmp/get_helm.sh
+    mode: '0700'
+  when: not helm_binary.stat.exists
+
+- name: Run Helm install script
+  ansible.builtin.command: /tmp/get_helm.sh
+  become: yes
+  when: not helm_binary.stat.exists
+
+- name: Verify Helm version
+  ansible.builtin.command: helm version --short
+  register: helm_ver
+  changed_when: false
+  ignore_errors: yes
+
+- name: Show Helm version
+  ansible.builtin.debug:
+    msg: "Helm installed: {{ helm_ver.stdout }}"
+  when: helm_ver.rc == 0
+

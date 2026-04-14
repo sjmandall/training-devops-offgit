@@ -1,0 +1,13 @@
+NAME                                                   READY   STATUS    RESTARTS   AGE
+prometheus-prometheus-stack-kube-prom-prometheus-0     2/2     Running   0          105m
+prometheus-stack-grafana-6c857b8686-fnxs5              3/3     Running   0          106m
+prometheus-stack-kube-prom-operator-5855d4f68-lrcql    1/1     Running   0          106m
+prometheus-stack-kube-state-metrics-5dbc5bbd58-vtx84   1/1     Running   0          106m
+prometheus-stack-prometheus-node-exporter-nq9cp        1/1     Running   0          106m
+NAME                                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)             AGE
+prometheus-operated                         ClusterIP   None             <none>        9090/TCP            105m
+prometheus-stack-grafana                    NodePort    10.110.14.79     <none>        80:32000/TCP        106m
+prometheus-stack-kube-prom-operator         ClusterIP   10.103.191.250   <none>        443/TCP             106m
+prometheus-stack-kube-prom-prometheus       ClusterIP   10.104.164.194   <none>        9090/TCP,8080/TCP   106m
+prometheus-stack-kube-state-metrics         ClusterIP   10.104.240.150   <none>        8080/TCP            106m
+prometheus-stack-prometheus-node-exporter   ClusterIP   10.106.98.73     <none>        9100/TCP            106m

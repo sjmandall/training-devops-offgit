@@ -1,0 +1,49 @@
+---
+- name: Check if Jenkins key already exists
+  ansible.builtin.stat:
+    path: "{{ jenkins_key_path }}"
+  register: jenkins_key
+
+- name: Add Jenkins GPG key
+  ansible.builtin.shell: |
+    curl -fsSL https://pkg.jenkins.io/debian-stable/jenkins.io-2023.key \
+    | sudo tee {{ jenkins_key_path }} > /dev/null
+  become: yes
+  when: not jenkins_key.stat.exists
+
+- name: Add Jenkins apt repository
+  ansible.builtin.apt_repository:
+    repo: "deb [signed-by={{ jenkins_key_path }}] https://pkg.jenkins.io/debian-stable binary/"
+    state: present
+    filename: jenkins
+  become: yes
+
+- name: Update apt cache after adding Jenkins repo
+  ansible.builtin.apt:
+    update_cache: yes
+  become: yes
+
+- name: Install Jenkins
+  ansible.builtin.apt:
+    name: jenkins
+    state: present
+  become: yes
+  notify: Restart Jenkins
+
+- name: Enable and start Jenkins service
+  ansible.builtin.systemd:
+    name: jenkins
+    enabled: yes
+    state: started
+  become: yes
+
+- name: Verify Jenkins is running
+  ansible.builtin.command: systemctl is-active jenkins
+  register: jenkins_status
+  changed_when: false
+  ignore_errors: yes
+
+- name: Show Jenkins status
+  ansible.builtin.debug:
+    msg: "Jenkins status: {{ jenkins_status.stdout }}"
+

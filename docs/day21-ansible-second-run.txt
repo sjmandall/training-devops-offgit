@@ -1,0 +1,156 @@
+
+PLAY [Configure Ubuntu workstation with DevOps tools] **************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [localhost]
+
+TASK [Show target host information] ********************************************
+ok: [localhost] => {
+    "msg": [
+        "Host    : localhost",
+        "OS      : Ubuntu 24.04",
+        "User    : webadmin",
+        "Date    : 2026-04-10"
+    ]
+}
+
+TASK [Ensure apt cache is fresh] ***********************************************
+ok: [localhost]
+
+TASK [workstation : Run packages and Java tasks] *******************************
+included: /home/webadmin/project/infra/ansible/roles/workstation/tasks/packages.yaml for localhost
+
+TASK [workstation : Update apt cache] ******************************************
+ok: [localhost]
+
+TASK [workstation : Install common packages] ***********************************
+ok: [localhost]
+
+TASK [workstation : Install Java] **********************************************
+ok: [localhost]
+
+TASK [workstation : Verify Java version] ***************************************
+ok: [localhost]
+
+TASK [workstation : Show Java version] *****************************************
+ok: [localhost] => {
+    "msg": "Java installed: openjdk version \"21.0.10\" 2026-01-20\nOpenJDK Runtime Environment (build 21.0.10+7-Ubuntu-124.04)\nOpenJDK 64-Bit Server VM (build 21.0.10+7-Ubuntu-124.04, mixed mode, sharing)"
+}
+
+TASK [workstation : Run Docker tasks] ******************************************
+included: /home/webadmin/project/infra/ansible/roles/workstation/tasks/docker.yaml for localhost
+
+TASK [workstation : Install Docker packages] ***********************************
+ok: [localhost]
+
+TASK [workstation : Add webadmin to docker group] ******************************
+ok: [localhost]
+
+TASK [workstation : Enable and start Docker service] ***************************
+ok: [localhost]
+
+TASK [workstation : Verify Docker version] *************************************
+ok: [localhost]
+
+TASK [workstation : Show Docker version] ***************************************
+ok: [localhost] => {
+    "msg": "Docker installed: Docker version 28.2.2, build 28.2.2-0ubuntu1~24.04.1"
+}
+
+TASK [workstation : Run kubectl tasks] *****************************************
+included: /home/webadmin/project/infra/ansible/roles/workstation/tasks/kubectl.yaml for localhost
+
+TASK [workstation : Check if kubectl already exists] ***************************
+ok: [localhost]
+
+TASK [workstation : Download kubectl binary] ***********************************
+skipping: [localhost]
+
+TASK [workstation : Verify kubectl version] ************************************
+ok: [localhost]
+
+TASK [workstation : Show kubectl version] **************************************
+ok: [localhost] => {
+    "msg": "kubectl installed: clientVersion:\n  buildDate: \"2026-03-18T18:32:54Z\"\n  compiler: gc\n  gitCommit: 6c1cd99aef09161ddb07b8ade6c9564e9b9bfe27\n  gitTreeState: clean\n  gitVersion: v1.35.3\n  goVersion: go1.25.7\n  major: \"1\"\n  minor: \"35\"\n  platform: linux/amd64\nkustomizeVersion: v5.7.1"
+}
+
+TASK [workstation : Run Helm tasks] ********************************************
+included: /home/webadmin/project/infra/ansible/roles/workstation/tasks/helm.yaml for localhost
+
+TASK [workstation : Check if Helm already exists] ******************************
+ok: [localhost]
+
+TASK [workstation : Download Helm install script] ******************************
+skipping: [localhost]
+
+TASK [workstation : Run Helm install script] ***********************************
+skipping: [localhost]
+
+TASK [workstation : Verify Helm version] ***************************************
+ok: [localhost]
+
+TASK [workstation : Show Helm version] *****************************************
+ok: [localhost] => {
+    "msg": "Helm installed: v3.20.1+ga2369ca"
+}
+
+TASK [workstation : Run Jenkins tasks] *****************************************
+included: /home/webadmin/project/infra/ansible/roles/workstation/tasks/jenkins.yaml for localhost
+
+TASK [workstation : Check if Jenkins key already exists] ***********************
+ok: [localhost]
+
+TASK [workstation : Add Jenkins GPG key] ***************************************
+skipping: [localhost]
+
+TASK [workstation : Add Jenkins apt repository] ********************************
+ok: [localhost]
+
+TASK [workstation : Update apt cache after adding Jenkins repo] ****************
+ok: [localhost]
+
+TASK [workstation : Install Jenkins] *******************************************
+ok: [localhost]
+
+TASK [workstation : Enable and start Jenkins service] **************************
+ok: [localhost]
+
+TASK [workstation : Verify Jenkins is running] *********************************
+ok: [localhost]
+
+TASK [workstation : Show Jenkins status] ***************************************
+ok: [localhost] => {
+    "msg": "Jenkins status: active"
+}
+
+TASK [Final verification - Java] ***********************************************
+ok: [localhost]
+
+TASK [Final verification - Docker] *********************************************
+ok: [localhost]
+
+TASK [Final verification - kubectl] ********************************************
+ok: [localhost]
+
+TASK [Final verification - Helm] ***********************************************
+ok: [localhost]
+
+TASK [Final verification - Jenkins] ********************************************
+ok: [localhost]
+
+TASK [Print final summary] *****************************************************
+ok: [localhost] => {
+    "msg": [
+        "======= Day 21 Workstation Summary =======",
+        "Java    : openjdk version \"21.0.10\" 2026-01-20\nOpenJDK Runtime Environment (build 21.0.10+7-Ubuntu-124.04)\nOpenJDK 64-Bit Server VM (build 21.0.10+7-Ubuntu-124.04, mixed mode, sharing)",
+        "Docker  : Docker version 28.2.2, build 28.2.2-0ubuntu1~24.04.1",
+        "kubectl : Client Version: v1.35.3\nKustomize Version: v5.7.1",
+        "Helm    : v3.20.1+ga2369ca",
+        "Jenkins : active",
+        "=========================================="
+    ]
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=37   changed=0    unreachable=0    failed=0    skipped=4    rescued=0    ignored=0   
+

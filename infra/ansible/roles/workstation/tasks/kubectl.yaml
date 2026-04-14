@@ -1,0 +1,25 @@
+- name: Check if kubectl already exists
+  ansible.builtin.stat:
+    path: /usr/local/bin/kubectl
+  register: kubectl_binary
+
+- name: Download kubectl binary
+  ansible.builtin.get_url:
+    url: "https://dl.k8s.io/release/{{ kubectl_version }}/bin/linux/amd64/kubectl"
+    dest: /usr/local/bin/kubectl
+    mode: '0755'
+  become: yes
+  when: not kubectl_binary.stat.exists
+
+- name: Verify kubectl version
+  ansible.builtin.command: kubectl version --client --output=yaml
+  register: kubectl_ver
+  changed_when: false
+  ignore_errors: yes
+
+
+- name: Show kubectl version
+  ansible.builtin.debug:
+    msg: "kubectl installed: {{ kubectl_ver.stdout | default('version output empty') }}"
+  when: kubectl_ver.rc is defined and kubectl_ver.rc == 0
+

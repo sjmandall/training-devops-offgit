@@ -1,0 +1,16 @@
+---
+- name: Run packages and Java tasks
+  ansible.builtin.include_tasks: packages.yaml
+
+- name: Run Docker tasks
+  ansible.builtin.include_tasks: docker.yaml
+
+- name: Run kubectl tasks
+  ansible.builtin.include_tasks: kubectl.yaml
+
+- name: Run Helm tasks
+  ansible.builtin.include_tasks: helm.yaml
+
+- name: Run Jenkins tasks
+  ansible.builtin.include_tasks: jenkins.yaml
+

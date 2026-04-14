@@ -1,0 +1,28 @@
+---
+# Common packages
+common_packages:
+  - curl
+  - wget
+  - git
+  - make
+  - unzip
+  - apt-transport-https
+  - ca-certificates
+  - gnupg
+  - lsb-release
+  - software-properties-common
+
+# Java
+java_package: openjdk-21-jdk
+
+# Docker
+docker_packages:
+  - docker.io
+  - docker-compose
+
+# Kubectl
+kubectl_version: "v1.29.0"
+
+# Jenkins
+jenkins_key_path: /etc/apt/keyrings/jenkins-keyring.asc
+

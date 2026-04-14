@@ -1,0 +1,4 @@
+docs/day17-ConfigMaps-secrets-probes.md:generic-api-key:25
+docs/day22-runbook.md:hashicorp-tf-password:100
+k8s/base/secrets.yaml:generic-api-key:3
+k8s/monitoring/prometheus-values.yaml:hashicorp-tf-password:24

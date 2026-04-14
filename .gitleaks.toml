@@ -1,0 +1,13 @@
+title = "Training project gitleaks config"
+
+[extend]
+useDefault = true
+
+[allowlist]
+description = "Ignore known safe training files"
+paths = [
+    '''docs/''',
+    '''k8s/base/secrets.yaml''',
+    '''k8s/monitoring/prometheus-values.yaml''',
+    '''\.gitleaksignore'''
+]

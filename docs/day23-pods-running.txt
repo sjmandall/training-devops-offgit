@@ -1,0 +1,19 @@
+NAME                                                   READY   STATUS    RESTARTS      AGE
+loki-0                                                 2/2     Running   0             68m
+loki-canary-sr2ql                                      1/1     Running   0             80m
+prometheus-prometheus-stack-kube-prom-prometheus-0     2/2     Running   2 (73m ago)   6h40m
+prometheus-stack-grafana-6c857b8686-fnxs5              2/3     Running   1 (51m ago)   6h42m
+prometheus-stack-kube-prom-operator-5855d4f68-lrcql    1/1     Running   1 (86m ago)   6h42m
+prometheus-stack-kube-state-metrics-5dbc5bbd58-vtx84   1/1     Running   0             6h42m
+prometheus-stack-prometheus-node-exporter-nq9cp        1/1     Running   0             6h42m
+NAME                                        TYPE        CLUSTER-IP       EXTERNAL-IP   PORT(S)             AGE
+loki                                        ClusterIP   10.98.216.34     <none>        3100/TCP,9095/TCP   80m
+loki-canary                                 ClusterIP   10.101.21.227    <none>        3500/TCP            80m
+loki-headless                               ClusterIP   None             <none>        3100/TCP            80m
+loki-memberlist                             ClusterIP   None             <none>        7946/TCP            80m
+prometheus-operated                         ClusterIP   None             <none>        9090/TCP            6h41m
+prometheus-stack-grafana                    NodePort    10.110.14.79     <none>        80:32000/TCP        6h42m
+prometheus-stack-kube-prom-operator         ClusterIP   10.103.191.250   <none>        443/TCP             6h42m
+prometheus-stack-kube-prom-prometheus       ClusterIP   10.104.164.194   <none>        9090/TCP,8080/TCP   6h42m
+prometheus-stack-kube-state-metrics         ClusterIP   10.104.240.150   <none>        8080/TCP            6h42m
+prometheus-stack-prometheus-node-exporter   ClusterIP   10.106.98.73     <none>        9100/TCP            6h42m

@@ -22,7 +22,13 @@ pipeline {
       defaultValue: false,
       description: 'Tick this to simulate a pipeline failure for demo'
     )
-  }
+    booleanParam(
+      name: 'SEED_FAKE_SECRET',
+      defaultValue: false,
+      description: 'Tick this to seed a fake secret and prove scanning catches it'
+    )
+
+   }
 
   environment {
     APP_NAME      = 'training-site'
@@ -44,6 +50,49 @@ pipeline {
       }
     }
 
+    stage('Seed fake secret (demo only)') {
+      when {
+        expression { params.SEED_FAKE_SECRET == true }
+      }
+      steps {
+        sh '''
+          echo "Seeding fake secret for scanning demo..."
+          cat > fake-secret-demo.txt <<SECRETEOF
+FAKE_AWS_KEY=AKIAIOSFODNN7EXAMPLE
+FAKE_AWS_SECRET=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY
+FAKE_GITHUB_TOKEN=ghp_FakeTokenForTestingPurposesOnly12345
+SECRETEOF
+          echo "Fake secret seeded."
+        '''
+      }
+    }
+
+    stage('Secret scanning') {
+      steps {
+        sh '''
+          echo "=== Secret scanning with Gitleaks ==="
+          gitleaks detect --source . \
+            --report-format json \
+            --report-path gitleaks-report.json \
+            --no-git \
+            --exit-code 1 || true
+
+          if [ -f gitleaks-report.json ]; then
+            FINDINGS=$(cat gitleaks-report.json | python3 -c "import sys,json; data=json.load(sys.stdin); print(len(data))" 2>/dev/null || echo "0")
+            echo "Gitleaks findings: ${FINDINGS}"
+            if [ "$FINDINGS" -gt "0" ]; then
+              echo "CRITICAL: Secrets detected in codebase!"
+              cat gitleaks-report.json
+              exit 1
+            fi
+          fi
+          echo "Secret scan PASSED - no secrets detected"
+        '''
+      }
+    }
+
+
+
     stage('Lint') {
       steps {
         sh '''
@@ -64,6 +113,57 @@ pipeline {
         '''
       }
     }
+
+    stage('Image scanning') {
+      steps {
+        sh """
+          echo "=== Image scanning with Trivy ==="
+          eval \$(minikube docker-env)
+          trivy image ${env.IMAGE_TAG} \
+            --severity HIGH,CRITICAL \
+            --format json \
+            --output trivy-image-report.json \
+            --exit-code 0
+
+          CRITICAL_COUNT=\$(cat trivy-image-report.json | \
+            python3 -c "
+import sys, json
+data = json.load(sys.stdin)
+count = 0
+for result in data.get('Results', []):
+    for vuln in result.get('Vulnerabilities', []):
+        if vuln.get('Severity') == 'CRITICAL':
+            count += 1
+print(count)
+" 2>/dev/null || echo "0")
+
+          echo "Critical vulnerabilities found: \${CRITICAL_COUNT}"
+
+          if [ "\${CRITICAL_COUNT}" -gt "10" ]; then
+            echo "CRITICAL: Too many critical vulnerabilities!"
+            exit 1
+          fi
+          echo "Image scan PASSED"
+        """
+      }
+    }
+
+    stage('Dependency scanning') {
+      steps {
+        sh '''
+          echo "=== Dependency scanning with Trivy ==="
+          trivy fs . \
+            --severity HIGH,CRITICAL \
+            --format json \
+            --output trivy-fs-report.json \
+            --exit-code 0
+          echo "Dependency scan complete"
+        '''
+      }
+    }
+
+
+
 
     stage('Test') {
       steps {

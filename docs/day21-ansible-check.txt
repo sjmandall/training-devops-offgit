@@ -1,0 +1,156 @@
+
+PLAY [Configure Ubuntu workstation with DevOps tools] **************************
+
+TASK [Gathering Facts] *********************************************************
+ok: [localhost]
+
+TASK [Show target host information] ********************************************
+ok: [localhost] => {
+    "msg": [
+        "Host    : localhost",
+        "OS      : Ubuntu 24.04",
+        "User    : webadmin",
+        "Date    : 2026-04-10"
+    ]
+}
+
+TASK [Ensure apt cache is fresh] ***********************************************
+ok: [localhost]
+
+TASK [workstation : Run packages and Java tasks] *******************************
+included: /home/webadmin/project/infra/ansible/roles/workstation/tasks/packages.yaml for localhost
+
+TASK [workstation : Update apt cache] ******************************************
+ok: [localhost]
+
+TASK [workstation : Install common packages] ***********************************
+ok: [localhost]
+
+TASK [workstation : Install Java] **********************************************
+ok: [localhost]
+
+TASK [workstation : Verify Java version] ***************************************
+skipping: [localhost]
+
+TASK [workstation : Show Java version] *****************************************
+ok: [localhost] => {
+    "msg": "Java installed: "
+}
+
+TASK [workstation : Run Docker tasks] ******************************************
+included: /home/webadmin/project/infra/ansible/roles/workstation/tasks/docker.yaml for localhost
+
+TASK [workstation : Install Docker packages] ***********************************
+ok: [localhost]
+
+TASK [workstation : Add webadmin to docker group] ******************************
+ok: [localhost]
+
+TASK [workstation : Enable and start Docker service] ***************************
+ok: [localhost]
+
+TASK [workstation : Verify Docker version] *************************************
+skipping: [localhost]
+
+TASK [workstation : Show Docker version] ***************************************
+ok: [localhost] => {
+    "msg": "Docker installed: "
+}
+
+TASK [workstation : Run kubectl tasks] *****************************************
+included: /home/webadmin/project/infra/ansible/roles/workstation/tasks/kubectl.yaml for localhost
+
+TASK [workstation : Check if kubectl already exists] ***************************
+ok: [localhost]
+
+TASK [workstation : Download kubectl binary] ***********************************
+skipping: [localhost]
+
+TASK [workstation : Verify kubectl version] ************************************
+skipping: [localhost]
+
+TASK [workstation : Show kubectl version] **************************************
+ok: [localhost] => {
+    "msg": "kubectl installed: "
+}
+
+TASK [workstation : Run Helm tasks] ********************************************
+included: /home/webadmin/project/infra/ansible/roles/workstation/tasks/helm.yaml for localhost
+
+TASK [workstation : Check if Helm already exists] ******************************
+ok: [localhost]
+
+TASK [workstation : Download Helm install script] ******************************
+skipping: [localhost]
+
+TASK [workstation : Run Helm install script] ***********************************
+skipping: [localhost]
+
+TASK [workstation : Verify Helm version] ***************************************
+skipping: [localhost]
+
+TASK [workstation : Show Helm version] *****************************************
+ok: [localhost] => {
+    "msg": "Helm installed: "
+}
+
+TASK [workstation : Run Jenkins tasks] *****************************************
+included: /home/webadmin/project/infra/ansible/roles/workstation/tasks/jenkins.yaml for localhost
+
+TASK [workstation : Check if Jenkins key already exists] ***********************
+ok: [localhost]
+
+TASK [workstation : Add Jenkins GPG key] ***************************************
+skipping: [localhost]
+
+TASK [workstation : Add Jenkins apt repository] ********************************
+ok: [localhost]
+
+TASK [workstation : Update apt cache after adding Jenkins repo] ****************
+changed: [localhost]
+
+TASK [workstation : Install Jenkins] *******************************************
+ok: [localhost]
+
+TASK [workstation : Enable and start Jenkins service] **************************
+ok: [localhost]
+
+TASK [workstation : Verify Jenkins is running] *********************************
+skipping: [localhost]
+
+TASK [workstation : Show Jenkins status] ***************************************
+ok: [localhost] => {
+    "msg": "Jenkins status: "
+}
+
+TASK [Final verification - Java] ***********************************************
+skipping: [localhost]
+
+TASK [Final verification - Docker] *********************************************
+skipping: [localhost]
+
+TASK [Final verification - kubectl] ********************************************
+skipping: [localhost]
+
+TASK [Final verification - Helm] ***********************************************
+skipping: [localhost]
+
+TASK [Final verification - Jenkins] ********************************************
+skipping: [localhost]
+
+TASK [Print final summary] *****************************************************
+ok: [localhost] => {
+    "msg": [
+        "======= Day 21 Workstation Summary =======",
+        "Java    : ",
+        "Docker  : ",
+        "kubectl : ",
+        "Helm    : ",
+        "Jenkins : ",
+        "=========================================="
+    ]
+}
+
+PLAY RECAP *********************************************************************
+localhost                  : ok=27   changed=1    unreachable=0    failed=0    skipped=14   rescued=0    ignored=0   
+
