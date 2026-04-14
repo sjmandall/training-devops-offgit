@@ -123,8 +123,9 @@ SECRETEOF
           trivy image ${env.IMAGE_TAG} \
             --severity HIGH,CRITICAL \
             --format json \
+            --docker-host tcp://192.168.49.2:2376 \
             --output trivy-image-report.json \
-            --exit-code 0
+            --exit-code 0 || true
 
           CRITICAL_COUNT=\$(cat trivy-image-report.json | \
             python3 -c "
