@@ -176,6 +176,34 @@ print(count)
       }
     }
 
+    stage('Run DB Migration') {
+      steps {
+        sh '''
+          echo "=== Running DB Migration v2.0.0 ==="
+
+          kubectl apply -f k8s/base/migration-configmap.yaml -n dev
+          kubectl apply -f k8s/base/migration-job.yaml -n dev
+
+          echo "Waiting for migration job to complete..."
+          kubectl wait --for=condition=complete \
+          job/training-site-migration-v2 \
+          -n dev \
+          --timeout=120s
+
+          echo "Migration status:"
+          kubectl get job training-site-migration-v2 -n dev
+
+          echo "Migration logs:"
+          kubectl logs -l type=migration -n dev --tail=20
+
+          echo "=== Migration completed ==="
+          '''
+           }
+         }
+
+
+
+
     stage('Simulate failure') {
       steps {
         script {
