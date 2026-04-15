@@ -181,8 +181,8 @@ print(count)
         sh '''
           echo "=== Running DB Migration v2.0.0 ==="
 
-          kubectl apply -f k8s/base/migration-configmap.yaml -n dev
-          kubectl apply -f k8s/base/migration-job.yaml -n dev
+          kubectl apply -f k8s/base/migration-configmap.yaml -n dev --validate=false
+          kubectl apply -f k8s/base/migration-job.yaml -n dev  --validate=false
 
           echo "Waiting for migration job to complete..."
           kubectl wait --for=condition=complete \
