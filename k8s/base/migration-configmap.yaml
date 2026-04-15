@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: migration-v2-script
+  namespace: dev
+  labels:
+    app: training-site
+    version: v2.0.0
+data:
+  v2_migration.sql: |
+    -- Day 25 v2.0.0 Migration Script
+
+    ALTER TABLE users ADD COLUMN IF NOT EXISTS
+      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+    CREATE INDEX IF NOT EXISTS idx_users_email
+      ON users(email);
+
+    CREATE TABLE IF NOT EXISTS schema_version (
+      id         INT AUTO_INCREMENT PRIMARY KEY,
+      version    VARCHAR(20) NOT NULL,
+      applied_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+      description VARCHAR(255)
+    );
+
+    INSERT INTO schema_version (version, description)
+    VALUES ('2.0.0', 'Added created_at column and email index');

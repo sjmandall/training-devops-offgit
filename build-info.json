@@ -1,8 +1,13 @@
 {
-  "app_name": "training-site",
-  "build_tag": "20260326-115523-01939bd",
-  "git_commit": "01939bd",
-  "build_date_utc": "2026-03-26T06:25:23Z",
-  "dockerfile": "docker/Dockerfile",
-  "image_name": "training-site:20260326-115523-01939bd"
+  "app": "training-site",
+  "version": "2.0.0",
+  "release": "v2",
+  "build_date": "2026-04-16",
+  "changes": [
+    "Added created_at column to users table",
+    "Added email index for faster lookups",
+    "Added schema_version tracking table",
+    "Added /version.php endpoint",
+    "DB migration automated via Kubernetes Job"
+  ]
 }

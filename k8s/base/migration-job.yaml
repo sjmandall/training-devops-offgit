@@ -1,0 +1,97 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: training-site-migration-v2
+  namespace: dev
+  labels:
+    app: training-site
+    version: v2.0.0
+    type: migration
+spec:
+  ttlSecondsAfterFinished: 300
+  backoffLimit: 3
+  template:
+    metadata:
+      labels:
+        app: training-site
+        type: migration
+    spec:
+      restartPolicy: OnFailure
+      initContainers:
+        - name: wait-for-db
+          image: mysql:8.0
+          command:
+            - sh
+            - -c
+            - |
+              echo "Waiting for database..."
+              until mysqladmin ping -h"$DB_HOST" -P"$DB_PORT" -u"$DB_USER" -p"$DB_PASSWORD" --silent; do
+                echo "Database not ready, waiting..."
+                sleep 3
+              done
+              echo "Database is ready"
+          env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: training-site-secrets
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: training-site-secrets
+                  key: DB_PORT
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: training-site-secrets
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: training-site-secrets
+                  key: DB_PASSWORD
+      containers:
+        - name: migration
+          image: mysql:8.0
+          command:
+            - sh
+            - -c
+            - |
+              echo "Running v2.0.0 migration..."
+              mysql -h"$DB_HOST" -P"$DB_PORT" -u"$DB_USER" -p"$DB_PASSWORD" "$DB_NAME" < /migrations/v2_migration.sql
+              echo "Migration complete"
+          env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: training-site-secrets
+                  key: DB_HOST
+            - name: DB_PORT
+              valueFrom:
+                secretKeyRef:
+                  name: training-site-secrets
+                  key: DB_PORT
+            - name: DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  name: training-site-secrets
+                  key: DB_NAME
+            - name: DB_USER
+              valueFrom:
+                secretKeyRef:
+                  name: training-site-secrets
+                  key: DB_USER
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: training-site-secrets
+                  key: DB_PASSWORD
+          volumeMounts:
+            - name: migration-script
+              mountPath: /migrations
+      volumes:
+        - name: migration-script
+          configMap:
+            name: migration-v2-script
+
