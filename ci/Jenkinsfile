@@ -180,6 +180,11 @@ print(count)
       steps {
         sh '''
           echo "=== Running DB Migration v2.0.0 ==="
+          kubectl delete job training-site-migration-v2 -n dev --force 2>/dev/null || true
+          kubectl delete configmap migration-v2-script -n dev 2>/dev/null || true
+
+          sleep 5          
+
 
           kubectl apply -f k8s/base/migration-configmap.yaml -n dev --validate=false
           kubectl apply -f k8s/base/migration-job.yaml -n dev  --validate=false

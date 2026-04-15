@@ -24,9 +24,15 @@ spec:
             - sh
             - -c
             - |
-              echo "Waiting for database..."
-              until mysqladmin ping -h"$DB_HOST" -P"$DB_PORT" -u"$DB_USER" -p"$DB_PASSWORD" --silent; do
-                echo "Database not ready, waiting..."
+              echo "Waiting for database at $DB_HOST:$DB_PORT..."
+              ATTEMPTS=0
+              until mysqladmin ping -h"$DB_HOST" -P"$DB_PORT" -u"$DB_USER" -p"$DB_PASSWORD" 2>&1; do
+                ATTEMPTS=$((ATTEMPTS + 1))
+                echo "Attempt $ATTEMPTS - Database not ready, waiting 3 seconds..."
+                if [ $ATTEMPTS -gt 20 ]; then
+                  echo "ERROR: Database not available after 20 attempts"
+                  exit 1
+                fi
                 sleep 3
               done
               echo "Database is ready"
