@@ -40,7 +40,11 @@ pipeline {
     TWILIO_TO     = '+917991172794'
     TRELLO_KEY      = credentials('trello-api-key')
     TRELLO_TOKEN    = credentials('trello-token')
-    TRELLO_LIST_ID  = credentials('trello-list-id') 
+    TRELLO_LIST_ID  = credentials('trello-list-id')
+    MINIKUBE_HOME = '/home/webadmin'
+    KUBECONFIG    = '/home/webadmin/.kube/config'
+    DOCKER_HOST   = 'unix:///var/run/docker.sock'
+    PATH          = "/usr/local/bin:/usr/bin:/bin:${env.PATH}" 
   }
 
   stages {
@@ -118,17 +122,21 @@ SECRETEOF
     stage('Image scanning') {
       steps {
         sh """
-          echo "=== Image scanning with Trivy ==="
-          eval \$(minikube docker-env)
-          trivy image ${env.IMAGE_TAG} \
-            --severity HIGH,CRITICAL \
-            --format json \
-            --docker-host tcp://192.168.49.2:2376 \
-            --output trivy-image-report.json \
-            --exit-code 0 || true
+            echo "=== Image scanning with Trivy ==="
+            export MINIKUBE_HOME=/home/webadmin
+            export KUBECONFIG=/home/webadmin/.kube/config
 
-          CRITICAL_COUNT=\$(cat trivy-image-report.json | \
-            python3 -c "
+            # Set docker env from minikube
+            eval \$(minikube docker-env --shell bash) || true
+
+            trivy image ${env.IMAGE_TAG} \\
+                --severity HIGH,CRITICAL \\
+                --format json \\
+                --output trivy-image-report.json \\
+                --exit-code 0 || true
+
+            CRITICAL_COUNT=\$(cat trivy-image-report.json | \\
+                python3 -c "
 import sys, json
 data = json.load(sys.stdin)
 count = 0
@@ -139,16 +147,16 @@ for result in data.get('Results', []):
 print(count)
 " 2>/dev/null || echo "0")
 
-          echo "Critical vulnerabilities found: \${CRITICAL_COUNT}"
+            echo "Critical vulnerabilities: \${CRITICAL_COUNT}"
 
-          if [ "\${CRITICAL_COUNT}" -gt "10" ]; then
-            echo "CRITICAL: Too many critical vulnerabilities!"
-            exit 1
-          fi
-          echo "Image scan PASSED"
+            if [ "\${CRITICAL_COUNT}" -gt "10" ]; then
+                echo "CRITICAL: Too many vulnerabilities!"
+                exit 1
+            fi
+            echo "Image scan PASSED"
         """
-      }
     }
+}
 
     stage('Dependency scanning') {
       steps {
